@@ -184,7 +184,7 @@ def handle_distribute_troops(game: Game, bot_state: BotState, query: QueryDistri
         for territory in border_territories:
             distributions[territory] += troops_per_territory
     
-        # The leftover troops will be put some territory across different continents (we don't care)
+        # The leftover troops will be put across different continents in the nodes having high degrees
         r = random.random()
         if r < 0.3:
             distributions[border_territories[16]] += leftover_troops
