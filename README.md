@@ -100,9 +100,9 @@ def handle_claim_territory(game: Game, bot_state: BotState, query: QueryClaimTer
 
         selected_territory = sorted(available, key=lambda x: count_adjacent_friendly(x), reverse=True)[0]
     
-    # Or if there are no such territories, we will pick just an unclaimed one with the lowest degree.
+    # Or if there are no such territories, we will pick just an unclaimed one with the highest degree.
     else:
-        selected_territory = sorted(unclaimed_territories, key=lambda x: len(game.state.map.get_adjacent_to(x)))[0]
+        selected_territory = sorted(unclaimed_territories, key=lambda x: len(game.state.map.get_adjacent_to(x)),reverse=True)[0]
 
     return game.move_claim_territory(query, selected_territory)
 
@@ -227,7 +227,7 @@ def handle_attack(game: Game, bot_state: BotState, query: QueryAttack) -> Union[
         for candidate_target in territories:
             candidate_attackers = sorted(list(set(game.state.map.get_adjacent_to(candidate_target)) & set(my_territories)), key=lambda x: game.state.territories[x].troops, reverse=True)
             for candidate_attacker in candidate_attackers:
-                if game.state.territories[candidate_attacker].troops > 1:
+                if game.state.territories[candidate_attacker].troops > game.state.territories[candidate_target].troops:
                     return game.move_attack(query, candidate_attacker, candidate_target, min(3, game.state.territories[candidate_attacker].troops - 1))
 
 
@@ -257,8 +257,8 @@ def handle_attack(game: Game, bot_state: BotState, query: QueryAttack) -> Union[
         if move != None:
             return move
         
-        # Otherwise we will attack anyone most of the time.
-        if random.random() < 0.9:
+        # Otherwise we will attack anyone most of the time .
+        if random.random() < 0.7:
             move = attack_weakest(bordering_territories)
             if move != None:
                 return move
